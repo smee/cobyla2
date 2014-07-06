@@ -1,0 +1,23 @@
+{
+  "name": "cobyla2",
+  "version": "1.0.0",
+  "authors": [
+    "Anders Gustafsson",
+    "Reinhard"
+  ],
+  "description": "Repacked version of https://code.google.com/p/jscobyla, unchanged",
+  "main": "Cobyla.js",
+  "keywords": [
+    "nonlinear",
+    "optimization"
+  ],
+  "license": "MIT",
+  "homepage": "https://code.google.com/p/jscobyla",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
