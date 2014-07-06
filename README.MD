@@ -1,3 +1,4 @@
-# Cobyla2
-Repacked version from https://code.google.com/p/jscobyla/
+cobyla2
+=======
 
+Bower compatible version of Cobyla2 from https://code.google.com/p/jscobyla/
