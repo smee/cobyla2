@@ -672,7 +672,11 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
         resmax = datmat[mpp][np];
         if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n, iprint);
         
-        return status;
+        return {status: status,
+                statusText: ["Normal", "MaxIterationsReached", "DivergingRoundingErrors"][status],
+                maxcv: resmax,
+                fitness: f,
+                iterations: nfvals};
     }
 
     function trstlp(n,  m,  a, b, rho,  dx) //(int n, int m, double[][] a, double[] b, double rho, double[] dx)
