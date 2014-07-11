@@ -1218,11 +1218,16 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
 
     function PART(src, from, to)
     {
-        var dest = arr(to - from + 1);
-        var destidx = 0;
-        for (var srcidx = from; srcidx <= to; ++srcidx, ++destidx) dest[destidx] = src[srcidx];
-        return dest;
+      return src.slice(from,to+1);
     }
+    /*
+     function PART(src, from, to)
+     {
+     var dest = arr(to - from + 1);
+     var destidx = 0;
+     for (var srcidx = from; srcidx <= to; ++srcidx, ++destidx) dest[destidx] = src[srcidx];
+     return dest;
+     }*/
 
     function FORMAT( x)
     {
