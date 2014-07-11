@@ -230,7 +230,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
 //alert("   f="+f+"  resmax="+resmax);
             if (nfvals == iprint - 1 || iprint == 3)
             {
-                PrintIterationResult(nfvals, f, resmax, x, n);
+                PrintIterationResult(nfvals, f, resmax, x, n, iprint);
             }
 
             con[mp] = f;
@@ -642,7 +642,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
                 if (iprint >= 2)
                     console.log("Reduction in RHO to "+rho+"  and PARMU = "+parmu);
                 if (iprint == 2) 
-                    PrintIterationResult(nfvals, datmat[mp][np], datmat[mpp][np], COL(sim, np), n);
+                    PrintIterationResult(nfvals, datmat[mp][np], datmat[mpp][np], COL(sim, np), n, iprint);
 
             } while (true);
         } while (true);
@@ -653,7 +653,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
                 if (iprint >= 1) console.log("%nNormal return from subroutine COBYLA%n");
                 if (ifull)
                 {
-                    if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n);
+                    if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n, iprint);
                     return status;
                 }
                 break;
@@ -670,7 +670,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
         for (var k = 1; k <= n; ++k) x[k] = sim[k][np];
         f = datmat[mp][np];
         resmax = datmat[mpp][np];
-        if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n);
+        if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n, iprint);
         
         return status;
     }
@@ -1194,7 +1194,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
         return false;
     }
         
-    function PrintIterationResult(nfvals, f, resmax,  x,  n)
+    function PrintIterationResult(nfvals, f, resmax,  x,  n, iprint)
     {
         if(iprint>1) console.log("NFVALS = "+nfvals+"  F = "+f+"  MAXCV = "+resmax);
         if(iprint>1) console.log("X = "+PART(x, 1, n));
