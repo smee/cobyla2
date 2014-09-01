@@ -68,7 +68,7 @@ var DivergingRoundingErrors=2;
      */
 
 	 // CobylaExitStatus FindMinimum(final Calcfc calcfc, int n, int m, double[] x, double rhobeg, double rhoend, int iprint, int maxfun)
-function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
+function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, iterationCallback, callbackIterations)
     {
         //     This subroutine minimizes an objective function F(X) subject to M
         //     inequality constraints on X, where X is a vector of variables that has
@@ -139,7 +139,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
             }
                      
 
-        var status = cobylb(fcalcfc, n, m, mpp, iox, rhobeg, rhoend, iprint, maxfun);
+        var status = cobylb(fcalcfc, n, m, mpp, iox, rhobeg, rhoend, iprint, maxfun, iterationCallback, callbackIterations);
         arraycopy(iox, 1, x, 0, n);
 
         return status;
@@ -147,7 +147,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
     
 //    private static CobylaExitStatus cobylb(Calcfc calcfc, int n, int m, int mpp, double[] x,
   //      double rhobeg, double rhoend, int iprint, int maxfun)
-    function cobylb(calcfc, n,  m,  mpp,  x, rhobeg,  rhoend,  iprint,  maxfun)
+    function cobylb(calcfc, n,  m,  mpp,  x, rhobeg,  rhoend,  iprint,  maxfun, iterationCallback, callbackIterations)
 		// calcf ist funktion die aufgerufen wird wie calcfc(n, m, ix, ocon)
     {
         // N.B. Arguments CON, SIM, SIMI, DATMAT, A, VSIG, VETA, SIGBAR, DX, W & IACT
@@ -231,6 +231,14 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
             if (nfvals == iprint - 1 || iprint == 3)
             {
                 PrintIterationResult(nfvals, f, resmax, x, n, iprint);
+            }
+            if(iterationCallback !== undefined && nfvals % callbackIterations == 0){
+              iterationCallback({'status': 3,
+                           'statusText': "Running",
+                           'maxcv': resmax,
+                           'fitness': f,
+                           'iterations': nfvals,
+                           'x': x});
             }
 
             con[mp] = f;
