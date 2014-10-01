@@ -48,6 +48,7 @@ function arraycopy(x, a, iox, b, n) {var i=0; while(i<n) {iox[i+b]=x[i+a];i++;};
 var Normal=0;
 var MaxIterationsReached=1;
 var DivergingRoundingErrors=2;
+var NoDifferenceInFitness=3;
 
 
     /**
@@ -64,11 +65,12 @@ var DivergingRoundingErrors=2;
      * @param iprint Print level, 0 &lt;= iprint &lt;= 3, where 0 provides no output and
      * 3 provides full output to the console.
      * @param maxfun Maximum number of function evaluations before terminating.
+     * @param fmaxiter Maximum number of iterations with deviation smaller than fdev in fitness values before termination
      * @return Exit status of the COBYLA2 optimization.
      */
 
 	 // CobylaExitStatus FindMinimum(final Calcfc calcfc, int n, int m, double[] x, double rhobeg, double rhoend, int iprint, int maxfun)
-function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
+function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxiter)
     {
         //     This subroutine minimizes an objective function F(X) subject to M
         //     inequality constraints on X, where X is a vector of variables that has
@@ -139,15 +141,33 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
             }
                      
 
-        var status = cobylb(fcalcfc, n, m, mpp, iox, rhobeg, rhoend, iprint, maxfun);
+        var status = cobylb(fcalcfc, n, m, mpp, iox, rhobeg, rhoend, iprint, maxfun, fmaxiter);
         arraycopy(iox, 1, x, 0, n);
 
         return status;
     }
     
+    // get the difference between the biggest and smallest fitness value of the last 
+    // <fmaxiter> iterations.
+    function getMaxDiffOfFitnessValues(f, fqueue, fmaxiter){
+        //add to queue
+        fqueue.push(f);
+        //if not enough value, can't compute diff
+        if(fqueue.length < fmaxiter) 
+            return Number.MAX_VALUE;
+        //remove oldest element
+        if(fqueue.length > fmaxiter)
+            fqueue.shift();
+        //min and max f of last x iterations
+        var fmax = Math.max.apply(null, fqueue);
+        var fmin = Math.min.apply(null, fqueue);
+        
+        return (fmax - fmin);
+    }
+        
 //    private static CobylaExitStatus cobylb(Calcfc calcfc, int n, int m, int mpp, double[] x,
   //      double rhobeg, double rhoend, int iprint, int maxfun)
-    function cobylb(calcfc, n,  m,  mpp,  x, rhobeg,  rhoend,  iprint,  maxfun)
+    function cobylb(calcfc, n,  m,  mpp,  x, rhobeg,  rhoend,  iprint,  maxfun, fmaxiter)
 		// calcf ist funktion die aufgerufen wird wie calcfc(n, m, ix, ocon)
     {
         // N.B. Arguments CON, SIM, SIMI, DATMAT, A, VSIG, VETA, SIGBAR, DX, W & IACT
@@ -169,6 +189,8 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
         var delta = 1.1;
 
         var f = 0.0;
+        var fdev = 0.1; //set in UI maybe
+        var fqueue = [];
         var resmax = 0.0; 
         var total;
 
@@ -212,12 +234,17 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
         //     Make the next call of the user-supplied subroutine CALCFC. These
         //     instructions are also used for calling CALCFC during the iterations of
         //     the algorithm.
-
+        
 		//alert("Iteration "+nfvals+" x="+x);
         L_40:
         do
         {
-            if (nfvals >= maxfun && nfvals > 0)
+            if (getMaxDiffOfFitnessValues(f, fqueue, fmaxiter) < fdev && nfvals > 0)
+            {    
+                status = NoDifferenceInFitness;
+                break L_40;
+            }
+            else if (nfvals >= maxfun && nfvals > 0)
             {
                 status = MaxIterationsReached;
                 break L_40;
@@ -645,6 +672,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
                     PrintIterationResult(nfvals, datmat[mp][np], datmat[mpp][np], COL(sim, np), n, iprint);
 
             } while (true);
+            
         } while (true);
         
         switch (status)
@@ -665,6 +693,10 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
                 if (iprint >= 1)
                     console.log("%nReturn from subroutine COBYLA because rounding errors are becoming damaging.%n");
                 break;
+            case NoDifferenceInFitness:
+                if (iprint >= 1)
+                    console.log("%nReturn from subroutine COBYLA because no difference in fitness after "+fmaxiter+" iterations detected.%n");
+                break;
         }
         
         for (var k = 1; k <= n; ++k) x[k] = sim[k][np];
@@ -673,7 +705,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun)
         if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n, iprint);
         
         return {status: status,
-                statusText: ["Normal", "MaxIterationsReached", "DivergingRoundingErrors"][status],
+                statusText: ["Normal", "MaxIterationsReached", "DivergingRoundingErrors", "NoDifferenceInFitness"][status],
                 maxcv: resmax,
                 fitness: f,
                 iterations: nfvals};
