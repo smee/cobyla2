@@ -167,7 +167,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
         
 //    private static CobylaExitStatus cobylb(Calcfc calcfc, int n, int m, int mpp, double[] x,
   //      double rhobeg, double rhoend, int iprint, int maxfun)
-    function cobylb(calcfc, n,  m,  mpp,  x, rhobeg,  rhoend,  iprint,  maxfun, fmaxite, riterationCallback, callbackIterations)
+    function cobylb(calcfc, n,  m,  mpp,  x, rhobeg,  rhoend,  iprint,  maxfun, fmaxiter, iterationCallback, callbackIterations)
 		// calcf ist funktion die aufgerufen wird wie calcfc(n, m, ix, ocon)
     {
         // N.B. Arguments CON, SIM, SIMI, DATMAT, A, VSIG, VETA, SIGBAR, DX, W & IACT
