@@ -21,6 +21,7 @@ var rhobeg = 5.0;	// Various Cobyla constants, see Cobyla docs in Cobyja.js
 var rhoend = 1.0e-6;
 var iprint = 3;
 var maxfun = 3500;
+var fmaxiter = 20;
 
 function test(n,m,x,con) {  	// objective function
    con[0]=x[0]*x[0]+x[1]*x[1]-1 		// first inequality constraint
@@ -28,7 +29,7 @@ function test(n,m,x,con) {  	// objective function
    return (x[0]-5)*(x[0]-5)+(x[1]-5)*(x[1]-5); // objective function 
    }
 x[0]=-7.9; x[1]=3.2;
-var r=FindMinimum(test, n,  m, x, rhobeg, rhoend,  iprint,  maxfun);
+var r=FindMinimum(test, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxiter);
 document.write("Result="+x);
 </script>
 
