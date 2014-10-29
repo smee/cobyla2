@@ -49,7 +49,8 @@ var Normal=0;
 var MaxIterationsReached=1;
 var DivergingRoundingErrors=2;
 var NoDifferenceInFitness=3;
-
+var ManuallyStopped = 4;
+var pleaseStop = false;
 
     /**
      * Minimizes the objective function F with respect to a set of inequality constraints CON,
@@ -121,7 +122,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
         //     the objective and constraint functions at X in F and CON(1),CON(2),
         //     ...,CON(M).  Note that we are trying to adjust X so that F(X) is as
         //     small as possible subject to the constraint functions being nonnegative.
-
+        pleaseStop = false;
         // Local variables
         var mpp = m + 2;
         // Internal base-1 X array
@@ -247,6 +248,10 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
             else if (nfvals >= maxfun && nfvals > 0)
             {
                 status = MaxIterationsReached;
+                break L_40;
+            }else if(pleaseStop)
+            {
+                status = ManuallyStopped;
                 break L_40;
             }
 
@@ -705,6 +710,10 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
                 if (iprint >= 1)
                     console.log("%nReturn from subroutine COBYLA because no difference in fitness after "+fmaxiter+" iterations detected.%n");
                 break;
+            case ManuallyStopped:
+                if (iprint >= 1)
+                    console.log("%nReturn from subroutine COBYLA because user asked us to.%n");
+                break;
         }
         
         for (var k = 1; k <= n; ++k) x[k] = sim[k][np];
@@ -713,7 +722,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
         if (iprint >= 1) PrintIterationResult(nfvals, f, resmax, x, n, iprint);
         
         return {status: status,
-                statusText: ["Normal", "MaxIterationsReached", "DivergingRoundingErrors", "NoDifferenceInFitness"][status],
+                statusText: ["Normal", "MaxIterationsReached", "DivergingRoundingErrors", "NoDifferenceInFitness","Cancelled"][status],
                 maxcv: resmax,
                 fitness: f,
                 iterations: nfvals};
