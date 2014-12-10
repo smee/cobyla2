@@ -49,8 +49,7 @@ var Normal=0;
 var MaxIterationsReached=1;
 var DivergingRoundingErrors=2;
 var NoDifferenceInFitness=3;
-var ManuallyStopped = 4;
-var pleaseStop = false;
+var Running = -1;
 
     /**
      * Minimizes the objective function F with respect to a set of inequality constraints CON,
@@ -249,10 +248,6 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
             {
                 status = MaxIterationsReached;
                 break L_40;
-            }else if(pleaseStop)
-            {
-                status = ManuallyStopped;
-                break L_40;
             }
 
             ++nfvals;
@@ -265,7 +260,7 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
                 PrintIterationResult(nfvals, f, resmax, x, n, iprint);
             }
             if(iterationCallback !== undefined && nfvals % callbackIterations == 0){
-              iterationCallback({'status': 3,
+              iterationCallback({'status': Running,
                            'statusText': "Running",
                            'maxcv': resmax,
                            'fitness': f,
