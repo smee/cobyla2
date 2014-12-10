@@ -720,7 +720,8 @@ function FindMinimum(calcfc, n,  m, x, rhobeg, rhoend,  iprint,  maxfun, fmaxite
                 statusText: ["Normal", "MaxIterationsReached", "DivergingRoundingErrors", "NoDifferenceInFitness","Cancelled"][status],
                 maxcv: resmax,
                 fitness: f,
-                iterations: nfvals};
+                iterations: nfvals,
+                x: x};
     }
 
     function trstlp(n,  m,  a, b, rho,  dx) //(int n, int m, double[][] a, double[] b, double rho, double[] dx)
